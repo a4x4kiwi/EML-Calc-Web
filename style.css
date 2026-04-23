@@ -1,0 +1,259 @@
+/* EML Calculator Web App */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: #1a1a1a;
+  font-family: 'Segoe UI', sans-serif;
+  color: #eee;
+  overflow: hidden;
+}
+
+/* ─── Root layout ──────────────────────────────────────────────────────────── */
+
+#app {
+  display: flex;
+  height: 100vh;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  gap: 0;
+}
+
+/* ─── Calculator body ──────────────────────────────────────────────────────── */
+
+#calc-panel {
+  width: 340px;
+  min-width: 340px;
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  user-select: none;
+}
+
+/* Display */
+#display {
+  background: #1c2c1c;
+  border-radius: 8px;
+  padding: 10px 12px 8px;
+  margin-bottom: 10px;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #333;
+}
+
+#display-expr {
+  font-size: 12px;
+  color: #8a8;
+  min-height: 18px;
+  word-break: break-all;
+  font-family: monospace;
+  text-align: right;
+}
+
+#display-result {
+  font-size: 24px;
+  font-weight: bold;
+  color: #bfefbf;
+  text-align: right;
+  font-family: monospace;
+  letter-spacing: -0.5px;
+}
+
+/* Mode indicators */
+#mode-row {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  color: #666;
+  padding: 2px 0 6px 2px;
+}
+
+.mode-indicator {
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #333;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mode-indicator.active {
+  background: #e07b00;
+  color: #fff;
+}
+
+/* ─── Button grid ──────────────────────────────────────────────────────────── */
+
+.btn-section {
+  margin-bottom: 5px;
+}
+
+.btn-row {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.row-6  { grid-template-columns: repeat(6, 1fr); }
+.row-5  { grid-template-columns: repeat(5, 1fr); }
+.row-4  { grid-template-columns: repeat(4, 1fr); }
+
+/* Add EML toggle row */
+.row-eml {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+button {
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.1s, transform 0.08s;
+  background: #3c3c3c;
+  color: #ddd;
+}
+
+button:active {
+  transform: scale(0.92);
+  filter: brightness(0.85);
+}
+
+/* Button color variants */
+.btn-fn   { background: #2e4a5e; color: #9cf; }
+.btn-op   { background: #3a3a50; color: #bcf; }
+.btn-orange { background: #c76d00; color: #fff; font-size: 18px; }
+.btn-red    { background: #8a1a1a; color: #fcc; }
+.btn-green  { background: #1a6a1a; color: #cfc; }
+.btn-shift  { background: #4a3a00; color: #fc8; }
+.btn-hyp    { background: #1a3a4a; color: #8cf; }
+.btn-num    { background: #3a3a3a; color: #eee; font-size: 15px; }
+.btn-zero   { grid-column: span 2; }
+.btn-equals { background: #e07b00; color: #fff; font-size: 16px; }
+
+.btn-shift.active { background: #c8a000; color: #000; }
+.btn-hyp.active   { background: #0077bb; color: #fff; }
+
+/* ─── EML toggle button ────────────────────────────────────────────────────── */
+
+#eml-toggle {
+  background: #222;
+  border: 1px solid #444;
+  color: #6af;
+  font-size: 11px;
+  padding: 0 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  height: 40px;
+  cursor: pointer;
+}
+
+#eml-toggle.open {
+  background: #0a2a4a;
+  border-color: #4af;
+  color: #4af;
+}
+
+/* ─── EML panel ────────────────────────────────────────────────────────────── */
+
+#eml-panel {
+  display: none;
+  flex-direction: column;
+  width: 0;
+  max-width: 520px;
+  height: calc(100vh - 48px);
+  background: #1e1e1e;
+  border-radius: 12px;
+  margin-left: 10px;
+  overflow: hidden;
+  transition: width 0.25s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+#eml-panel.open {
+  display: flex;
+  width: 520px;
+}
+
+#eml-panel-header {
+  padding: 8px 12px;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+#eml-hint {
+  font-size: 10px;
+  color: #555;
+  margin-left: auto;
+}
+
+/* Tree canvas container */
+#tree-container {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  background: #141414;
+}
+
+#tree-canvas {
+  display: block;
+  cursor: grab;
+}
+
+#tree-canvas:active { cursor: grabbing; }
+
+/* Working log */
+#log-container {
+  height: 220px;
+  min-height: 120px;
+  overflow-y: auto;
+  border-top: 1px solid #333;
+  background: #1a1a1a;
+  padding: 4px 0;
+}
+
+#log-container::-webkit-scrollbar { width: 6px; }
+#log-container::-webkit-scrollbar-track { background: #1a1a1a; }
+#log-container::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+.log-row {
+  font-size: 11px;
+  font-family: monospace;
+  padding: 3px 10px;
+  color: #999;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-row:hover { background: #262626; }
+.log-row.eml-step { color: #d4922a; border-left-color: #c87800; }
+.log-row.revealed { color: #bbb; }
+.log-row.selected { background: #0a2a4a; color: #7cf; border-left-color: #4af; }
+
+/* ─── Scrollbar for app overflow ───────────────────────────────────────────── */
+
+#app::-webkit-scrollbar { width: 0; }
+
+/* ─── Responsive touch targets ─────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  #app { padding: 8px; }
+  #calc-panel { width: 100%; min-width: unset; }
+  #eml-panel.open { width: calc(100vw - 16px); margin-left: 0; margin-top: 8px; }
+  #app { flex-direction: column; overflow-y: auto; }
+  button { height: 44px; font-size: 14px; }
+}

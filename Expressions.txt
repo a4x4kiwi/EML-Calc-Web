@@ -1,0 +1,299 @@
+ E = EML(1, 1)
+
+  Exp(x) = EML(x, 1)
+
+  Log(x) = EML(1, Exp(EML(1, x)))
+
+  Subtract(x, y) = EML(Log(x), Exp(y))
+
+  -1 = Subtract(Log(1), 1)
+
+  2 = Subtract(1, -1)
+
+  Minus(x) = Subtract(Log(1), x)
+
+  Plus(x, y) = Subtract(x, Minus(y))
+
+  Inv(x) = Exp(Minus(Log(x)))
+
+  Times(x, y) = Exp(Plus(Log(x), Log(y)))
+
+  Sqr(x) = Times(x, x)
+
+  Divide(x, y) = Times(x, Inv(y))
+
+  Half(x) = Divide(x, 2)
+
+  Avg(x, y) = Half(Plus(x, y))
+
+  Sqrt(x) = Exp(Half(Log(x)))
+
+  Power(x, y) = Exp(Times(y, Log(x)))
+
+  Log(x, y) = Divide(Log(y), Log(x))
+
+  Pi = Sqrt(Minus(Sqr(Log(-1))))
+
+  Hypot(x, y) = Sqrt(Plus(Sqr(x), Sqr(y)))
+
+  LogisticSigmoid(x) = Inv(EML(Minus(x), Exp(-1)))
+
+  Cosh(x) = Avg(Exp(x), Exp(Minus(x)))
+
+  Sinh(x) = EML(x, Exp(Cosh(x)))
+
+  Tanh(x) = Divide(Sinh(x), Cosh(x))
+
+  Cos(x) = Cosh(Sqrt(Minus(Sqr(x))))
+
+  Sin(x) = Cos(Subtract(x, Half(Pi)))
+
+  Tan(x) = Divide(Sin(x), Cos(x))
+
+  ArcSinh(x) = Log(Plus(x, Hypot(-1, x)))
+
+  ArcCosh(x) = ArcSinh(Hypot(x, Sqrt(-1)))
+
+  ArcCos(x) = ArcCosh(Cos(ArcCosh(x)))
+
+  ArcTanh(x) = ArcSinh(Inv(Tan(ArcCos(x))))
+
+  ArcSin(x) = Subtract(Half(Pi), ArcCos(x))
+
+  ArcTan(x) = ArcSin(Tanh(ArcSinh(x)))
+
+
+  // From Lark grammar:
+
+  inv(x) = 1/x
+
+  suc(x) = x+1
+
+  sqr(x) = x^2
+
+  two = 2
+
+  var(x) = x
+
+  sub(x, y) = x-y
+
+  add(x, y) = x+y
+
+  mul(x, y) = x*y
+
+  div(x, y) = x/y
+
+  neg(x) = -x
+
+  // From Rust verifier:
+
+  eConst = EML(1, 1)
+
+  expEML(x) = EML(x, 1)
+
+  logEML(x) = EML(1, expEML(EML(1, x)))
+
+  subtractEML(x, y) = EML(logEML(x), expEML(y))
+
+  minusEML(x) = subtractEML(Log(1), x)
+
+  plusEML(x, y) = subtractEML(x, minusEML(y))
+
+  invEML(x) = expEML(minusEML(logEML(x)))
+
+  timesEML(x, y) = expEML(plusEML(logEML(x), logEML(y)))
+
+  sqrEML(x) = timesEML(x, x)
+
+  divideEML(x, y) = timesEML(x, invEML(y))
+
+  halfEML(x) = divideEML(x, 2)
+
+  avgEML(x, y) = halfEML(plusEML(x, y))
+
+  iConst = expEML(halfEML(logEML(-1)))
+
+  piConst = divideEML(logEML(-1), iConst)
+
+  sqrRootEML(x) = expEML(halfEML(logEML(x)))
+
+  powerEML(x, y) = expEML(timesEML(y, logEML(x)))
+
+  log2EML(base, x) = divideEML(logEML(x), logEML(base))
+
+  hypotEML(x, y) = sqrRootEML(plusEML(sqrEML(x), sqrEML(y)))
+
+  logisticSigmoidEML(x) = invEML(EML(minusEML(x), expEML(-1)))
+
+  coshEML(x) = avgEML(expEML(x), expEML(minusEML(x)))
+
+  sinhEML(x) = hypotEML(I, coshEML(x))
+
+  cosEML(x) = coshEML(divideEML(x, I))
+
+  tanhEML(x) = divideEML(sinhEML(x), coshEML(x))
+
+  tanEML(x) = hypotEML(I, invEML(cosEML(x)))
+
+  sinEML(x) = cosEML(subtractEML(x, halfEML(piConst)))
+
+  arcSinhEML(x) = logEML(plusEML(x, hypotEML(-1, x)))
+
+  arcCoshEML(x) = arcSinhEML(hypotEML(I, x))
+
+  arcCosEML(x) = arcCoshEML(cosEML(arcCoshEML(x)))
+
+  arcSinEML(x) = arcCosEML(sinEML(arcCosEML(x)))
+
+  arcTanhEML(x) = arcSinhEML(tanEML(arcSinEML(x)))
+
+  arcTanEML(x) = arcSinEML(tanhEML(arcSinhEML(x)))
+
+  // (* Phase-2 witness checks using already-proved canonical forms (prevents
+  expression blow-up). *)
+  sqrRootW(x) = Exp(Log(x)/2)
+
+  powerW(x, y) = Exp(y * Log(x))
+
+  log2W(base, x) = Log(x)/Log(base)
+
+  hypotW(x, y) = Sqrt(x^2 + y^2)
+
+  logisticSigmoidW(x) = 1/(EML(-x, Exp(-1)))
+
+  coshW(x) = (Exp(x) + Exp(-x))/2
+
+  cosW(x) = Cosh(x/I)
+
+  sinW(x) = Cos(x - Pi/2)
+
+  arcSinhW(x) = Log(x + Sqrt(1 + x^2))
+
+  // (* Replace several old flaky branch/sign witnesses with the accepted Rust
+  witnesses. *)
+  sinhW(x) = EML(x, Exp(Cosh(x)))
+
+  tanhW(x) = Sinh(x)/Cosh(x)
+
+  tanW(x) = Sin(x)/Cos(x)
+
+  arcCoshW(x) = ArcSinh(Sqrt(x^2 - 1))
+
+  arcCosW(x) = ArcCosh(Cos(ArcCosh(x)))
+
+  arcSinW(x) = Pi/2 - ArcCos(x)
+
+  arcTanhW(x) = ArcSinh(1/Tan(ArcCos(x)))
+
+  arcTanW(x) = ArcSin(Tanh(ArcSinh(x)))
+
+  // From EML toolkit verifier:
+
+  // (* Generalized formulas induced by the witness chain (Rust/Wolfram search
+  style). *)
+  eConst = EML(1, 1)
+
+  zeroEML = EML(1,EML(EML(1,1),1))
+
+  negEML = EML(EML(1,EML(EML(1,EML(1,EML(1,1))),1)),EML(EML(1,1),1))
+
+  twoEML = EML(EML(1,EML(EML(1,1),1)),EML(EML(EML(1,EML(EML(1,EML(1,EML(1,1))),1)),
+  EML(EML(1,1),1)),1))
+
+  expEML(x) = EML(x, 1)
+
+  logEML(x) = EML(1, expEML(EML(1, x)))
+
+  subtractEML(x, y) = EML(logEML(x), expEML(y))
+
+  minusEML(x) = subtractEML(Log(1), x)
+
+  plusEML(x, y) = subtractEML(x, minusEML(y))
+
+  invEML(x) = expEML(minusEML(logEML(x)))
+
+  timesEML(x, y) = expEML(plusEML(logEML(x), logEML(y)))
+
+  sqrEML(x) = timesEML(x, x)
+
+  divideEML(x, y) = timesEML(x, invEML(y))
+
+  halfEML(x) = divideEML(x, 2)
+
+  avgEML(x, y) = halfEML(plusEML(x, y))
+
+  iConst = expEML(halfEML(logEML(-1)))
+
+  piConst = divideEML(logEML(-1), iConst)
+
+  sqrtEML(x) = expEML(halfEML(logEML(x)))
+
+  powerEML(x, y) = expEML(timesEML(y, logEML(x)))
+
+  logaritmEML(base, x) = divideEML(logEML(x), logEML(base))
+
+  hypotEML(x, y) = sqrtEML(plusEML(sqrEML(x), sqrEML(y)))
+
+  logisticSigmoidEML(x) = invEML(EML(minusEML(x), expEML(-1)))
+
+  coshEML(x) = avgEML(expEML(x), expEML(minusEML(x)))
+
+  sinhEML(x) = hypotEML(I, coshEML(x))
+
+  cosEML(x) = coshEML(divideEML(x, I))
+
+  tanhEML(x) = divideEML(sinhEML(x), coshEML(x))
+
+  tanEML(x) = hypotEML(I, invEML(cosEML(x)))
+
+  sinEML(x) = cosEML(subtractEML(x, halfEML(piConst)))
+
+  arcSinhEML(x) = logEML(plusEML(x, hypotEML(-1, x)))
+
+  arcCoshEML(x) = arcSinhEML(hypotEML(I, x))
+
+  arcCosEML(x) = arcCoshEML(cosEML(arcCoshEML(x)))
+
+  arcSinEML(x) = arcCosEML(sinEML(arcCosEML(x)))
+
+  arcTanhEML(x) = arcSinhEML(tanEML(arcSinEML(x)))
+
+  arcTanEML(x) = arcSinEML(tanhEML(arcSinhEML(x)))
+
+  // (* Phase-2 witness checks using already-proved canonical forms (prevents
+  expression blow-up). *)
+  sqrtW(x) = Exp(Log(x)/2)
+
+  powerW(x, y) = Exp(y * Log(x))
+
+  logarithmW(base, x) = Log(x)/Log(base)
+
+  hypotW(x, y) = Sqrt(x^2 + y^2)
+
+  logisticSigmoidW(x) = 1/(EML(-x, Exp(-1)))
+
+  coshW(x) = (Exp(x) + Exp(-x))/2
+
+  cosW(x) = Cosh(x/I)
+
+  sinW(x) = Cos(x - Pi/2)
+
+  arcSinhW(x) = Log(x + Sqrt(1 + x^2))
+
+  // (* Replace several old flaky branch/sign witnesses with the accepted Rust
+  witnesses. *)
+  sinhW(x) = EML(x, Exp(Cosh(x)))
+
+  tanhW(x) = Sinh(x)/Cosh(x)
+
+  tanW(x) = Sin(x)/Cos(x)
+
+  arcCoshW(x) = ArcSinh(Sqrt(x^2 - 1))
+
+  arcCosW(x) = ArcCosh(Cos(ArcCosh(x)))
+
+  arcSinW(x) = Pi/2 - ArcCos(x)
+
+  arcTanhW(x) = ArcSinh(1/Tan(ArcCos(x)))
+
+  arcTanW(x) = ArcSin(Tanh(ArcSinh(x)))
