@@ -1477,9 +1477,10 @@ class TreeRenderer {
     this._zoom  = 1;
     this._panX  = H_PAD;
     this._panY  = V_PAD;
-    this._dragging  = false;
-    this._dragLast  = null;
-    this._dragMoved = false;
+    this._dragging     = false;
+    this._dragLast     = null;
+    this._dragMoved    = false;
+    this._lastPointerUp = null;
     this.expandedNodes = new Set();
 
     this.onStepRevealed = null; // callback(stepIdx)
@@ -1746,6 +1747,7 @@ class TreeRenderer {
       this._dragging  = true;
       this._dragLast  = { x: e.offsetX, y: e.offsetY };
       this._dragMoved = false;
+      this._lastPointerUp = null;
       c.setPointerCapture(e.pointerId);
     });
 
@@ -1760,12 +1762,36 @@ class TreeRenderer {
     });
 
     c.addEventListener('pointerup', e => {
-      if (!this._dragMoved) this._handleClick(e.offsetX, e.offsetY);
       this._dragging = false;
+      if (this._dragMoved) return;
+      const now = Date.now();
+      const last = this._lastPointerUp;
+      this._lastPointerUp = { t: now, x: e.offsetX, y: e.offsetY };
+      // Detect double-tap: two taps within 350ms at roughly the same spot
+      if (last && now - last.t < 350 &&
+          Math.abs(e.offsetX - last.x) < 20 && Math.abs(e.offsetY - last.y) < 20) {
+        this._lastPointerUp = null; // consume both taps
+        this._handleExpand(e.offsetX, e.offsetY);
+        return;
+      }
+      // Delay single-click to allow double-tap detection to win
+      const ox = e.offsetX, oy = e.offsetY;
+      setTimeout(() => {
+        if (this._lastPointerUp && this._lastPointerUp.t === now) {
+          this._handleClick(ox, oy);
+        }
+      }, 360);
     });
 
-    c.addEventListener('contextmenu', e => { e.preventDefault(); this._handleExpand(e.offsetX, e.offsetY); });
-    c.addEventListener('dblclick',    e => this._handleExpand(e.offsetX, e.offsetY));
+    c.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      this._lastPointerUp = null; // cancel pending single-click
+      this._handleExpand(e.offsetX, e.offsetY);
+    });
+
+    // dblclick fires after two clicks have already been processed by pointerup,
+    // so we handle double-tap there and ignore the dblclick event entirely.
+    c.addEventListener('dblclick', e => e.preventDefault());
   }
 
   _toWorld(mx, my) {
