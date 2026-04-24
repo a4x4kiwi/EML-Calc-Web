@@ -45,9 +45,10 @@ sin(x)     = 15-term Taylor series with argument reduction
 | `eml.js` | Source: engine, parser, tree renderer |
 | `style.css` | Source: stylesheet |
 | `test_engine.js` | Node.js smoke tests (`node test_engine.js`) |
-| `Expressions.txt` | EML identity reference from the paper |
+| `identities.sx` | EML identity definitions — original source from Clifford Heath |
 
-## Reference
+## Credits
 
+- **Clifford Heath** ([@cjheath](https://codeberg.org/cjheath)) — `identities.sx` identity definitions, from the [simple_form](https://codeberg.org/cjheath/simple_form) project
 - Paper: [arXiv:2603.21852](https://arxiv.org/abs/2603.21852) — *All elementary functions from a single binary operator*
 - Zenodo supplementary code: [zenodo.org/records/19183008](https://zenodo.org/records/19183008)

@@ -320,21 +320,27 @@ const EmlLib = (() => {
     return named('acosh', [x], ln(new LogSumNode(x, sqrtPt)));
   }
 
-  // PI via Machin's formula: π = 4*(4*atan(1/5) - atan(1/239))
-  // Evaluated numerically using the Taylor _atan helper (not Math.PI).
-  class PiNode extends EmlNode {
-    constructor() { super(); this._val = null; }
-    get children() { return []; }
-    label() { return 'π'; }
-    eval() {
-      if (this._val === null) {
-        this._val = 4 * (4 * _atan(0.2) - _atan(1/239));
-      }
-      return this._val;
-    }
+  // PI via Machin's formula as a visible EML tree:
+  //   π = 4 × (4×atan(1/5) − atan(1/239))
+  // This matches the C# implementation and produces a real, inspectable tree.
+  // identities.sx gives: Pi = Sqrt(Minus(Sqr(Log(-1)))) — complex intermediates,
+  // so we use Machin which is purely real and shows meaningful working in the log.
+  function buildPiTree() {
+    const atan5   = new AtanNode(K(1/5));       // atan(1/5)
+    const atan239 = new AtanNode(K(1/239));     // atan(1/239)
+    const four    = K(4);
+    // 4×atan(1/5) — use RealMulNode so zero/sign safe
+    const fourAtan5 = named('4×atan(⅕)', [atan5],   new RealMulNode(four, atan5));
+    // 4×atan(1/5) − atan(1/239)
+    const inner     = named('4atan(⅕)−atan(1/239)', [fourAtan5, atan239],
+                            new LogDiffNode(fourAtan5, atan239));
+    // 4 × (...)
+    const pi        = named('π', [inner],
+                            new RealMulNode(K(4), inner));
+    return pi;
   }
 
-  const PI = new PiNode();
+  const PI = buildPiTree();
   const E  = new ConstantNode(Math.E);
 
   // Factorial (integer only)
@@ -347,7 +353,7 @@ const EmlLib = (() => {
   return { K, EML, named,
            exp, ln, neg, sub, add, inv, mul, div, sqr, sqrt, pow,
            logBase, hypot, cosh, sinh, tanh, asinh, acosh,
-           PI, E, fact };
+           buildPiTree, PI, E, fact };
 })();
 
 // ─── Evaluate with trace ───────────────────────────────────────────────────────
@@ -544,7 +550,7 @@ class Parser {
       const id = t.value;
 
       // Constants (no parens)
-      if (id === 'pi')  return EmlLib.K(EmlLib.PI.eval());
+      if (id === 'pi')  return EmlLib.buildPiTree();
       if (id === 'e')   return EmlLib.K(Math.E);
       if (id === 'ans') return EmlLib.K(this.ans);
 
