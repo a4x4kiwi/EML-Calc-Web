@@ -5,98 +5,162 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EML Calculator</title>
   <style>
-/* EML Calculator Web App */
+/* EML Calculator — FX-991 inspired skin */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
-  background: #1a1a1a;
-  font-family: 'Segoe UI', sans-serif;
+  background: #2a2a2e;
+  font-family: 'Segoe UI', Arial, sans-serif;
   color: #eee;
   overflow: hidden;
 }
 
-/* ─── Root layout ──────────────────────────────────────────────────────────── */
+/* ─── Root layout ─────────────────────────────────────────────────────────── */
 
 #app {
   display: flex;
   height: 100vh;
   align-items: flex-start;
   justify-content: center;
-  padding: 24px;
-  gap: 0;
+  padding: 20px 20px 20px 20px;
+  gap: 14px;
 }
 
-/* ─── Calculator body ──────────────────────────────────────────────────────── */
+/* ─── Calculator body — silver/grey casing ────────────────────────────────── */
 
 #calc-panel {
-  width: 340px;
-  min-width: 340px;
-  background: #2a2a2a;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  width: 310px;
+  min-width: 310px;
+  background: linear-gradient(175deg, #d8d8d8 0%, #b8b8b8 100%);
+  border-radius: 10px 10px 18px 18px;
+  padding: 10px 12px 14px;
+  box-shadow:
+    0 2px 0 #fff inset,
+    0 -2px 0 #888 inset,
+    4px 0 0 #ccc inset,
+    -4px 0 0 #ccc inset,
+    0 12px 40px rgba(0,0,0,0.7);
+  border: 1px solid #999;
   user-select: none;
 }
 
-/* Display */
-#display {
-  background: #1c2c1c;
-  border-radius: 8px;
-  padding: 10px 12px 8px;
-  margin-bottom: 10px;
-  min-height: 72px;
+/* ─── Brand header ────────────────────────────────────────────────────────── */
+
+#brand-bar {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
   justify-content: space-between;
+  padding: 2px 2px 4px;
+}
+
+#brand-name {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #1a1a1a;
+}
+
+#brand-model {
+  font-size: 11px;
+  font-style: italic;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+#brand-tagline {
+  font-size: 7px;
+  color: #555;
+  text-align: right;
+  line-height: 1.3;
+}
+
+/* ─── Solar panel strip ───────────────────────────────────────────────────── */
+
+#solar-strip {
+  height: 22px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1a0a00 0px, #2d1500 18px,
+    #111 18px, #111 20px
+  );
+  border-radius: 3px;
+  margin-bottom: 5px;
   border: 1px solid #333;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+}
+
+/* ─── Display ─────────────────────────────────────────────────────────────── */
+
+#display {
+  background: #b8c9a0;
+  border-radius: 4px;
+  padding: 6px 8px 5px;
+  margin-bottom: 6px;
+  border: 2px solid #555;
+  box-shadow:
+    inset 0 2px 8px rgba(0,0,0,0.35),
+    0 1px 0 #ddd;
+  position: relative;
+}
+
+#display-mode {
+  font-size: 8px;
+  color: #2a3a1a;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+  font-weight: bold;
 }
 
 #display-expr {
-  font-size: 12px;
-  color: #8a8;
-  min-height: 18px;
-  word-break: break-all;
-  font-family: monospace;
+  font-size: 11px;
+  color: #2a3a1a;
+  min-height: 15px;
   text-align: right;
+  font-family: 'Courier New', monospace;
+  opacity: 0.75;
+  word-break: break-all;
 }
 
 #display-result {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
-  color: #bfefbf;
+  color: #1a2a0a;
   text-align: right;
-  font-family: monospace;
-  letter-spacing: -0.5px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+  line-height: 1.1;
 }
 
-/* Mode indicators */
-#mode-row {
+/* ─── Mode strip below display ────────────────────────────────────────────── */
+
+#mode-strip {
   display: flex;
-  gap: 6px;
-  font-size: 10px;
-  color: #666;
-  padding: 2px 0 6px 2px;
+  background: #3355aa;
+  border-radius: 2px;
+  margin-bottom: 7px;
+  overflow: hidden;
+  font-size: 7.5px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
 }
 
-.mode-indicator {
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: #333;
-  transition: background 0.15s, color 0.15s;
+.mode-cell {
+  flex: 1;
+  text-align: center;
+  padding: 2px 1px;
+  color: #aac;
+  border-right: 1px solid #224;
+  cursor: default;
 }
 
-.mode-indicator.active {
-  background: #e07b00;
-  color: #fff;
-}
+.mode-cell:last-child { border-right: none; }
+.mode-cell.active { background: #6688ff; color: #fff; }
+#ind-shift.active { background: #e07b00; color: #fff; }
+#ind-hyp.active   { background: #007799; color: #fff; }
 
-/* ─── Button grid ──────────────────────────────────────────────────────────── */
-
-.btn-section {
-  margin-bottom: 5px;
-}
+/* ─── Button grid structure ───────────────────────────────────────────────── */
 
 .btn-row {
   display: grid;
@@ -104,262 +168,562 @@ html, body {
   margin-bottom: 4px;
 }
 
-.row-6  { grid-template-columns: repeat(6, 1fr); }
-.row-5  { grid-template-columns: repeat(5, 1fr); }
-.row-4  { grid-template-columns: repeat(4, 1fr); }
+.row-6 { grid-template-columns: repeat(6, 1fr); }
+.row-5 { grid-template-columns: repeat(5, 1fr); }
 
-/* Add EML toggle row */
-.row-eml {
-  grid-template-columns: 1fr 1fr auto;
+/* ─── Shift labels above buttons ──────────────────────────────────────────── */
+
+.btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
+.shift-label {
+  font-size: 6.5px;
+  font-weight: bold;
+  color: #c84000;      /* red for SHIFT functions */
+  text-align: center;
+  line-height: 1.2;
+  min-height: 9px;
+  letter-spacing: 0.2px;
+}
+
+.shift-label.green { color: #008844; }   /* green for alternate functions */
+.shift-label.blank { visibility: hidden; }
+
+/* ─── Base button style ───────────────────────────────────────────────────── */
+
 button {
-  height: 40px;
+  width: 100%;
+  height: 33px;
   border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  transition: filter 0.1s, transform 0.08s;
-  background: #3c3c3c;
-  color: #ddd;
+  position: relative;
+  letter-spacing: 0.2px;
+  transition: filter 0.08s, transform 0.07s;
+
+  /* Raised 3-D effect */
+  box-shadow:
+    0 3px 0 rgba(0,0,0,0.45),
+    0 1px 0 rgba(255,255,255,0.2) inset;
 }
 
 button:active {
-  transform: scale(0.92);
-  filter: brightness(0.85);
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  filter: brightness(0.88);
 }
 
-/* Button color variants */
-.btn-fn   { background: #2e4a5e; color: #9cf; }
-.btn-op   { background: #3a3a50; color: #bcf; }
-.btn-orange { background: #c76d00; color: #fff; font-size: 18px; }
-.btn-red    { background: #8a1a1a; color: #fcc; }
-.btn-green  { background: #1a6a1a; color: #cfc; }
-.btn-shift  { background: #4a3a00; color: #fc8; }
-.btn-hyp    { background: #1a3a4a; color: #8cf; }
-.btn-num    { background: #3a3a3a; color: #eee; font-size: 15px; }
-.btn-zero   { grid-column: span 2; }
-.btn-equals { background: #e07b00; color: #fff; font-size: 16px; }
+/* ─── Button colour classes ───────────────────────────────────────────────── */
 
-.btn-shift.active { background: #c8a000; color: #000; }
-.btn-hyp.active   { background: #0077bb; color: #fff; }
+/* Dark charcoal — numeric keys */
+.btn-num {
+  background: linear-gradient(170deg, #3a3a3a, #222);
+  color: #f0f0f0;
+  font-size: 14px;
+  font-weight: 800;
+}
 
-/* ─── EML toggle button ────────────────────────────────────────────────────── */
+/* Dark charcoal — operators (÷ × + −) */
+.btn-op {
+  background: linear-gradient(170deg, #3a3a3a, #222);
+  color: #f0a000;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Medium dark — function keys */
+.btn-fn {
+  background: linear-gradient(170deg, #444, #2a2a2a);
+  color: #e0e0e0;
+  font-size: 10.5px;
+}
+
+/* Gold/amber — INV / SHIFT key */
+.btn-inv {
+  background: linear-gradient(170deg, #d4a800, #a07800);
+  color: #1a0a00;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.btn-inv.active {
+  background: linear-gradient(170deg, #ffcc00, #cc9900);
+  box-shadow: 0 0 6px #ffcc00, 0 3px 0 rgba(0,0,0,0.4);
+}
+
+/* HYP key */
+.btn-hyp {
+  background: linear-gradient(170deg, #444, #2a2a2a);
+  color: #88ccff;
+  font-size: 10.5px;
+}
+
+.btn-hyp.active {
+  background: linear-gradient(170deg, #0077aa, #004466);
+  color: #fff;
+}
+
+/* C key — dark orange */
+.btn-c {
+  background: linear-gradient(170deg, #cc5500, #883300);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* AC key — red */
+.btn-ac {
+  background: linear-gradient(170deg, #cc2200, #881100);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* Equals — dark blue */
+.btn-equals {
+  background: linear-gradient(170deg, #1155cc, #0a3388);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ON button */
+.btn-on {
+  background: linear-gradient(170deg, #cc2200, #881100);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+/* span-2 for zero key */
+.btn-zero { grid-column: span 2; }
+
+/* ─── EML toggle strip ────────────────────────────────────────────────────── */
+
+#bottom-strip {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  align-items: center;
+}
 
 #eml-toggle {
-  background: #222;
-  border: 1px solid #444;
-  color: #6af;
-  font-size: 11px;
-  padding: 0 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  height: 40px;
+  flex: 1;
+  height: 28px;
+  background: linear-gradient(170deg, #222244, #111133);
+  border: 1px solid #4466cc;
+  color: #88aaff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 4px;
   cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+  transition: all 0.15s;
 }
 
 #eml-toggle.open {
-  background: #0a2a4a;
-  border-color: #4af;
-  color: #4af;
+  background: linear-gradient(170deg, #1133aa, #0a2266);
+  border-color: #88aaff;
+  color: #ccddff;
+  box-shadow: 0 0 8px rgba(100,150,255,0.4), 0 2px 0 rgba(0,0,0,0.5);
 }
 
-/* ─── EML panel ────────────────────────────────────────────────────────────── */
+#help-btn {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(170deg, #333, #1a1a1a);
+  border: 1px solid #666;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 900;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#help-btn:hover { background: linear-gradient(170deg, #444, #222); color: #fff; }
+
+/* ─── Help / About modal ──────────────────────────────────────────────────── */
+
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal-overlay.open { display: flex; }
+
+#modal {
+  background: #1e1e28;
+  border: 1px solid #4466cc;
+  border-radius: 10px;
+  padding: 24px 28px;
+  max-width: 440px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1.7;
+  position: relative;
+}
+
+#modal h2 {
+  font-size: 17px;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+#modal .subtitle {
+  font-size: 11px;
+  color: #88aaff;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+#modal h3 {
+  font-size: 12px;
+  color: #aac;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 14px 0 5px;
+}
+
+#modal p { margin-bottom: 8px; color: #bbb; }
+#modal a { color: #88aaff; text-decoration: none; }
+#modal a:hover { text-decoration: underline; }
+
+#modal code {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: #ffc040;
+  font-family: 'Courier New', monospace;
+}
+
+#modal .credit {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+  font-size: 11px;
+  color: #888;
+}
+
+#modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+#modal-close:hover { color: #fff; }
+
+/* ─── EML panel ───────────────────────────────────────────────────────────── */
 
 #eml-panel {
   display: none;
   flex-direction: column;
   width: 0;
-  max-width: 520px;
-  height: calc(100vh - 48px);
-  background: #1e1e1e;
-  border-radius: 12px;
-  margin-left: 10px;
+  max-width: 540px;
+  height: calc(100vh - 40px);
+  background: #13131a;
+  border-radius: 10px;
   overflow: hidden;
   transition: width 0.25s ease;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+  border: 1px solid #2a2a44;
 }
 
-#eml-panel.open {
-  display: flex;
-  width: 520px;
-}
+#eml-panel.open { display: flex; width: 540px; }
 
 #eml-panel-header {
-  padding: 8px 12px;
-  background: #252525;
-  border-bottom: 1px solid #333;
-  font-size: 12px;
-  color: #888;
+  padding: 7px 12px;
+  background: #1a1a28;
+  border-bottom: 1px solid #2a2a44;
+  font-size: 11px;
+  color: #6688cc;
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 #eml-hint {
-  font-size: 10px;
-  color: #555;
+  font-size: 9.5px;
+  color: #444;
   margin-left: auto;
+  font-weight: normal;
 }
 
-/* Tree canvas container */
 #tree-container {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  position: relative;
-  background: #141414;
+  background: #0d0d14;
 }
 
-#tree-canvas {
-  display: block;
-  cursor: grab;
-}
-
+#tree-canvas { display: block; cursor: grab; }
 #tree-canvas:active { cursor: grabbing; }
 
-/* Working log */
+/* ─── Working log ─────────────────────────────────────────────────────────── */
+
 #log-container {
-  height: 220px;
-  min-height: 120px;
+  height: 210px;
   overflow-y: auto;
-  border-top: 1px solid #333;
-  background: #1a1a1a;
-  padding: 4px 0;
+  border-top: 1px solid #2a2a44;
+  background: #111118;
+  padding: 3px 0;
 }
 
-#log-container::-webkit-scrollbar { width: 6px; }
-#log-container::-webkit-scrollbar-track { background: #1a1a1a; }
-#log-container::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+#log-container::-webkit-scrollbar { width: 5px; }
+#log-container::-webkit-scrollbar-track { background: #111; }
+#log-container::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
 .log-row {
-  font-size: 11px;
-  font-family: monospace;
-  padding: 3px 10px;
-  color: #999;
+  font-size: 10.5px;
+  font-family: 'Courier New', monospace;
+  padding: 2px 10px;
+  color: #666;
   cursor: pointer;
-  border-left: 3px solid transparent;
-  transition: background 0.1s;
+  border-left: 2px solid transparent;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: background 0.08s;
 }
 
-.log-row:hover { background: #262626; }
-.log-row.eml-step { color: #d4922a; border-left-color: #c87800; }
-.log-row.current  { background: #2a1e00; color: #ffd080; border-left-color: #ffaa00; }
-.log-row.selected { background: #0a2a4a; color: #7cf; border-left-color: #4af; }
-.log-row.expanded-header { color: #00bfff; border-left-color: #00bfff; font-style: italic; }
-.log-row.expanded-inner  { padding-left: 22px; color: #c8860a; border-left-color: #804000; font-size: 10px; }
-.log-row.expanded-inner.eml-step { color: #ffb040; }
+.log-row:hover  { background: #1a1a22; color: #999; }
+.log-row.eml-step { color: #9a6010; border-left-color: #6a4008; }
+.log-row.current  { background: #1e1600; color: #ffc060; border-left-color: #cc8800; }
+.log-row.selected { background: #0a1830; color: #6aadff; border-left-color: #3366cc; }
+.log-row.expanded-inner { padding-left: 20px; color: #7a5010; font-size: 9.5px; }
+.log-row.expanded-inner.eml-step { color: #cc8830; border-left-color: #7a4c00; }
 
-/* ─── Scrollbar for app overflow ───────────────────────────────────────────── */
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
 
-#app::-webkit-scrollbar { width: 0; }
-
-/* ─── Responsive touch targets ─────────────────────────────────────────────── */
-
-@media (max-width: 600px) {
-  #app { padding: 8px; }
+@media (max-width: 680px) {
+  #app { padding: 8px; flex-direction: column; align-items: center; overflow-y: auto; height: auto; }
   #calc-panel { width: 100%; min-width: unset; }
-  #eml-panel.open { width: calc(100vw - 16px); margin-left: 0; margin-top: 8px; }
-  #app { flex-direction: column; overflow-y: auto; }
-  button { height: 44px; font-size: 14px; }
+  #eml-panel.open { width: 100%; height: 60vh; }
+  button { height: 36px; }
 }
 
 </style>
 </head>
 <body>
+
+<!-- ── Help / About modal ── -->
+<div id="modal-overlay">
+  <div id="modal">
+    <button id="modal-close" title="Close">×</button>
+    <h2>EML Calculator</h2>
+    <p class="subtitle">Every computation as a binary tree: <code>eml(x,y) = exp(x) − ln(y)</code></p>
+
+    <h3>How to use</h3>
+    <p>Type an expression and press <code>=</code>. Open the <strong>EML tree</strong> panel to see the full binary tree breakdown and step-by-step working log.</p>
+    <p>Click any tree node or log row to highlight the linked entry. Double-click a node to collapse its raw EML subtree.</p>
+
+    <h3>SHIFT / HYP</h3>
+    <p><strong>SHIFT</strong> → sin becomes sin⁻¹, cos→cos⁻¹, tan→tan⁻¹, log→10ˣ, ln→eˣ<br>
+       <strong>HYP</strong> → sin→sinh, cos→cosh, tan→tanh<br>
+       <strong>SHIFT+HYP</strong> → sin→sinh⁻¹, cos→cosh⁻¹, tan→tanh⁻¹</p>
+
+    <h3>Key functions</h3>
+    <p><code>nPr</code> <code>nCr</code> permutations / combinations &nbsp;·&nbsp;
+       <code>x!</code> factorial &nbsp;·&nbsp; <code>EXP</code> ×10ⁿ &nbsp;·&nbsp;
+       <code>Ans</code> last result &nbsp;·&nbsp; <code>∛x</code> cube root &nbsp;·&nbsp; <code>1/x</code> reciprocal</p>
+
+    <h3>About the maths</h3>
+    <p>All functions are built purely from <code>eml(x,y) = exp(x) − ln(y)</code> — the only primitive that uses <code>Math.exp</code> and <code>Math.log</code>. π is computed via Machin's formula as a real EML tree.</p>
+    <p>Based on <a href="https://arxiv.org/abs/2603.21852" target="_blank">arXiv:2603.21852</a> · Identities from <a href="https://codeberg.org/cjheath/simple_form" target="_blank">Clifford Heath / simple_form</a></p>
+
+    <div class="credit">
+      UI inspired by the <strong>Casio fx-991</strong> — a classic 1980s scientific calculator.<br>
+      Casio is a registered trademark of Casio Computer Co., Ltd.<br>
+      Source: <a href="https://github.com/a4x4kiwi/EML-Calc-Web" target="_blank">github.com/a4x4kiwi/EML-Calc-Web</a>
+    </div>
+  </div>
+</div>
+
 <div id="app">
 
   <!-- ── Calculator body ── -->
   <div id="calc-panel">
 
+    <!-- Brand header -->
+    <div id="brand-bar">
+      <span id="brand-name">CASIO</span>
+      <span id="brand-model">fx-EML</span>
+      <span id="brand-tagline">SCIENTIFIC<br>CALCULATOR</span>
+    </div>
+
+    <!-- Solar strip -->
+    <div id="solar-strip"></div>
+
+    <!-- LCD Display -->
     <div id="display">
+      <div id="display-mode">DEG</div>
       <div id="display-expr"></div>
       <div id="display-result">0</div>
     </div>
 
-    <div id="mode-row">
-      <span id="ind-shift" class="mode-indicator">SHIFT</span>
-      <span id="ind-hyp"   class="mode-indicator">HYP</span>
+    <!-- Mode/indicator strip -->
+    <div id="mode-strip">
+      <div class="mode-cell" id="ind-shift">SHIFT</div>
+      <div class="mode-cell" id="ind-hyp">HYP</div>
+      <div class="mode-cell active">DEG</div>
+      <div class="mode-cell">RAD</div>
+      <div class="mode-cell">FIX</div>
+      <div class="mode-cell">SCI</div>
+      <div class="mode-cell">NORM</div>
     </div>
 
-    <!-- Row 1: SHIFT HYP STO RCL DEL AC -->
+    <!-- Row 1: INV  MODE  √    log   ln    ON -->
+    <!-- shift:       x²AND  10ˣOR  eˣXOR      -->
     <div class="btn-row row-6">
-      <button class="btn-shift" id="btn-SHIFT">SHIFT</button>
-      <button class="btn-hyp"   id="btn-HYP">HYP</button>
-      <button class="btn-fn"    id="btn-STO">STO</button>
-      <button class="btn-fn"    id="btn-RCL">RCL</button>
-      <button class="btn-red"   id="btn-DEL">DEL</button>
-      <button class="btn-red"   id="btn-AC">AC</button>
+      <div class="btn-wrap">
+        <span class="shift-label blank">·</span>
+        <button class="btn-inv" id="btn-SHIFT">INV</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label blank">·</span>
+        <button class="btn-hyp" id="btn-HYP">HYP</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">x² AND</span>
+        <button class="btn-fn" id="btn-SQRT">√</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">10ˣ OR</span>
+        <button class="btn-fn" id="btn-LOG">log</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label green">eˣ XOR</span>
+        <button class="btn-fn" id="btn-LN">ln</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label blank">·</span>
+        <button class="btn-on" id="btn-ON">ON</button>
+      </div>
     </div>
 
-    <!-- Row 2: x⁻¹ x² x³ yˣ ˣ√y x! -->
+    <!-- Row 2: a b/c  °'"  hyp   sin   cos   tan -->
+    <!-- shift:             sin⁻¹ cos⁻¹ tan⁻¹     -->
     <div class="btn-row row-6">
-      <button class="btn-fn" id="btn-INV">x⁻¹</button>
-      <button class="btn-fn" id="btn-SQR">x²</button>
-      <button class="btn-fn" id="btn-CUBE">x³</button>
-      <button class="btn-fn" id="btn-POW">yˣ</button>
-      <button class="btn-fn" id="btn-XROOTY">ˣ√y</button>
-      <button class="btn-fn" id="btn-FACT">x!</button>
+      <div class="btn-wrap">
+        <span class="shift-label">d/c  A</span>
+        <button class="btn-fn" id="btn-CBRT">∛x</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">DEL</span>
+        <button class="btn-fn" id="btn-DEL">◀</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">nPr</span>
+        <button class="btn-fn" id="btn-SIN">sin</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">nCr</span>
+        <button class="btn-fn" id="btn-COS">cos</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">1/x</span>
+        <button class="btn-fn" id="btn-TAN">tan</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">Ans</span>
+        <button class="btn-fn" id="btn-ANS">Ans</button>
+      </div>
     </div>
 
-    <!-- Row 3: sin cos tan log ln Ans -->
+    <!-- Row 3: +/-  X⟷Y  (  )   Min  MR -->
     <div class="btn-row row-6">
-      <button class="btn-fn" id="btn-SIN">sin</button>
-      <button class="btn-fn" id="btn-COS">cos</button>
-      <button class="btn-fn" id="btn-TAN">tan</button>
-      <button class="btn-fn" id="btn-LOG">log</button>
-      <button class="btn-fn" id="btn-LN">ln</button>
-      <button class="btn-fn" id="btn-ANS">Ans</button>
+      <div class="btn-wrap">
+        <span class="shift-label">NEG</span>
+        <button class="btn-fn" id="btn-NEG">+/−</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">x!</span>
+        <button class="btn-fn" id="btn-FACT">x!</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">nPr</span>
+        <button class="btn-fn" id="btn-LPAREN">(</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">nCr</span>
+        <button class="btn-fn" id="btn-RPAREN">)</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label">EXP</span>
+        <button class="btn-fn" id="btn-EXP">EXP</button>
+      </div>
+      <div class="btn-wrap">
+        <span class="shift-label green">π</span>
+        <button class="btn-fn" id="btn-PI">π</button>
+      </div>
     </div>
 
-    <!-- Row 4: ( ) nPr nCr EXP π -->
-    <div class="btn-row row-6">
-      <button class="btn-op" id="btn-LPAREN">(</button>
-      <button class="btn-op" id="btn-RPAREN">)</button>
-      <button class="btn-fn" id="btn-NPR">nPr</button>
-      <button class="btn-fn" id="btn-NCR">nCr</button>
-      <button class="btn-fn" id="btn-EXP">EXP</button>
-      <button class="btn-fn" id="btn-PI">π</button>
-    </div>
-
-    <!-- Numeric pad rows -->
-    <div class="btn-row row-5">
+    <!-- Numeric pad: 5-col FX-991 style -->
+    <!-- Row: 7  8  9  C  AC -->
+    <div class="btn-row row-5" style="margin-top:5px;">
       <button class="btn-num" id="btn-7">7</button>
       <button class="btn-num" id="btn-8">8</button>
       <button class="btn-num" id="btn-9">9</button>
-      <button class="btn-op"  id="btn-DIV">÷</button>
-      <button class="btn-op"  id="btn-POW2">^</button>
+      <button class="btn-c"   id="btn-DEL2">C</button>
+      <button class="btn-ac"  id="btn-AC">AC</button>
     </div>
+    <!-- Row: 4  5  6  ×  ÷ -->
     <div class="btn-row row-5">
       <button class="btn-num" id="btn-4">4</button>
       <button class="btn-num" id="btn-5">5</button>
       <button class="btn-num" id="btn-6">6</button>
       <button class="btn-op"  id="btn-MUL">×</button>
-      <button class="btn-fn"  id="btn-SQRT">√</button>
+      <button class="btn-op"  id="btn-DIV">÷</button>
     </div>
+    <!-- Row: 1  2  3  +  − -->
     <div class="btn-row row-5">
       <button class="btn-num" id="btn-1">1</button>
       <button class="btn-num" id="btn-2">2</button>
       <button class="btn-num" id="btn-3">3</button>
-      <button class="btn-op"  id="btn-SUB">−</button>
       <button class="btn-op"  id="btn-ADD">+</button>
+      <button class="btn-op"  id="btn-SUB">−</button>
     </div>
+    <!-- Row: 0(×2)  .  EXP  =  M+ -->
     <div class="btn-row row-5">
       <button class="btn-num btn-zero" id="btn-0">0</button>
       <button class="btn-num" id="btn-DOT">.</button>
-      <button class="btn-op"  id="btn-NEG">±</button>
+      <button class="btn-fn"  id="btn-POW">yˣ</button>
       <button class="btn-equals" id="btn-EQ">=</button>
     </div>
 
-    <!-- EML toggle -->
-    <div class="btn-row row-eml" style="margin-top:6px;">
-      <button class="btn-fn" id="btn-CBRT" style="font-size:11px;">∛x</button>
-      <button class="btn-fn" id="btn-REC"  style="font-size:11px;">1/x</button>
+    <!-- Bottom strip: EML toggle + help -->
+    <div id="bottom-strip">
       <button id="eml-toggle">EML tree ▶</button>
+      <button id="help-btn" title="Help / About">?</button>
     </div>
 
   </div><!-- /calc-panel -->
@@ -368,7 +732,7 @@ button:active {
   <div id="eml-panel">
     <div id="eml-panel-header">
       <span>EML Binary Tree</span>
-      <span id="eml-hint">Right-click or double-click a node to expand to raw EML</span>
+      <span id="eml-hint">dbl-click node to collapse · click node or row to link</span>
     </div>
     <div id="tree-container">
       <canvas id="tree-canvas"></canvas>
@@ -1514,6 +1878,13 @@ emlToggle.addEventListener('click', () => {
 
 new ResizeObserver(resizeCanvas).observe(treeContainer);
 
+// ─── Help modal ───────────────────────────────────────────────────────────────
+
+const modalOverlay = document.getElementById('modal-overlay');
+document.getElementById('help-btn').addEventListener('click', () => modalOverlay.classList.add('open'));
+document.getElementById('modal-close').addEventListener('click', () => modalOverlay.classList.remove('open'));
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) modalOverlay.classList.remove('open'); });
+
 // ─── Working log ──────────────────────────────────────────────────────────────
 
 let _logRows   = []; // index = step index, value = DOM row or null (for leaf steps)
@@ -1602,13 +1973,11 @@ function showError(msg) {
 const BASE_LABELS = {
   'btn-SIN': 'sin', 'btn-COS': 'cos', 'btn-TAN': 'tan',
   'btn-LOG': 'log', 'btn-LN':  'ln',
-  'btn-SQR': 'x²',  'btn-CUBE': 'x³', 'btn-INV': 'x⁻¹',
 };
 
 const SHIFT_LABELS = {
-  'btn-SIN': 'asin', 'btn-COS': 'acos', 'btn-TAN': 'atan',
-  'btn-LOG': '10^x', 'btn-LN':  'e^x',
-  'btn-SQR': 'x³',   'btn-CUBE': '∛x',  'btn-INV': 'x⁻¹',
+  'btn-SIN': 'sin⁻¹', 'btn-COS': 'cos⁻¹', 'btn-TAN': 'tan⁻¹',
+  'btn-LOG': '10ˣ',   'btn-LN':  'eˣ',
 };
 
 const HYP_LABELS = {
@@ -1616,7 +1985,7 @@ const HYP_LABELS = {
 };
 
 const SHIFT_HYP_LABELS = {
-  'btn-SIN': 'asinh', 'btn-COS': 'acosh', 'btn-TAN': 'atanh',
+  'btn-SIN': 'sinh⁻¹', 'btn-COS': 'cosh⁻¹', 'btn-TAN': 'tanh⁻¹',
 };
 
 function updateTrigLabels() {
@@ -1650,6 +2019,7 @@ function handleButton(id) {
       return;
 
     case 'btn-AC':
+    case 'btn-ON':
       s.clear();
       renderer.clear();
       logInner.innerHTML = '';
@@ -1658,6 +2028,7 @@ function handleButton(id) {
       return;
 
     case 'btn-DEL':
+    case 'btn-DEL2':   // C key = single backspace
       if (s.pendingResult !== null) { s.buffer = ''; s.pendingResult = null; }
       else s.del();
       updateDisplay();
@@ -1705,9 +2076,11 @@ function handleButton(id) {
       break;
 
     case 'btn-POW': s.append('^('); break;
-    case 'btn-FACT': s.append('!'); break; // handled in parse — not yet
-    case 'btn-INV': s.append('^(-1)'); break;
-    case 'btn-XROOTY': s.append('^(1/('); break;
+    case 'btn-FACT': s.append('!'); break;
+    case 'btn-CBRT': s.append('cbrt('); break;
+    case 'btn-SQRT': s.append('sqrt('); break;
+    case 'btn-NPR':  s.append('nPr(');  break;
+    case 'btn-NCR':  s.append('nCr(');  break;
 
     // Function buttons — SHIFT/HYP aware
     case 'btn-SIN':
@@ -1751,12 +2124,6 @@ function handleButton(id) {
       else                            { s.append('^3');    }
       s.isShift = false; updateTrigLabels();
       break;
-    case 'btn-SQRT': s.append('sqrt('); break;
-    case 'btn-CBRT': s.append('cbrt('); break;
-    case 'btn-REC':  s.append('rec(');  break;
-    case 'btn-NPR':  s.append('nPr(');  break;
-    case 'btn-NCR':  s.append('nCr(');  break;
-
     default: break;
   }
 

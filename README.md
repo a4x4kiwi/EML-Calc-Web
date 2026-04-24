@@ -49,6 +49,7 @@ sin(x)     = 15-term Taylor series with argument reduction
 
 ## Credits
 
+- **Casio Computer Co., Ltd.** — UI layout and design inspired by the iconic Casio fx-991, a classic 1980s scientific calculator. Casio is a registered trademark of Casio Computer Co., Ltd. This project is an independent fan work with no affiliation.
 - **Clifford Heath** ([@cjheath](https://codeberg.org/cjheath)) — `identities.sx` identity definitions, from the [simple_form](https://codeberg.org/cjheath/simple_form) project
 - Paper: [arXiv:2603.21852](https://arxiv.org/abs/2603.21852) — *All elementary functions from a single binary operator*
 - Zenodo supplementary code: [zenodo.org/records/19183008](https://zenodo.org/records/19183008)
