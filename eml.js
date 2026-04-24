@@ -358,17 +358,19 @@ const EmlLib = (() => {
 
 // ─── Evaluate with trace ───────────────────────────────────────────────────────
 
-function evaluateWithTrace(root, expandedNodes) {
+function evaluateWithTrace(root) {
   const steps = [];
   const seen  = new Set();
-  const expanded = expandedNodes || new Set();
 
   function walk(node) {
     if (seen.has(node)) return;
     seen.add(node);
 
-    const kids = expanded.has(node) ? node._inner.children : node.children;
-    for (const c of kids) walk(c);
+    // Always walk inner EML tree for NamedNodes (fully-expanded default)
+    if (node instanceof NamedNode && node._inner) {
+      walkInner(node._inner);
+    }
+    for (const c of node.children) walk(c);
 
     let result = NaN;
     try { result = node.eval(); } catch (_) {}
@@ -376,8 +378,23 @@ function evaluateWithTrace(root, expandedNodes) {
     steps.push({
       node,
       result,
-      isLeaf:   node.children.length === 0,
+      isLeaf:    node.children.length === 0,
       isEmlStep: node instanceof BinaryEmlNode,
+    });
+  }
+
+  function walkInner(node) {
+    if (seen.has(node)) return;
+    seen.add(node);
+    for (const c of node.children) walkInner(c);
+    let result = NaN;
+    try { result = node.eval(); } catch (_) {}
+    steps.push({
+      node,
+      result,
+      isLeaf:    node.children.length === 0,
+      isEmlStep: node instanceof BinaryEmlNode,
+      isInner:   true,  // inner EML expansion step
     });
   }
 
@@ -733,10 +750,35 @@ class TreeRenderer {
     this._steps = steps || [];
     this._revealedCount = 0;
     this._selectedStep  = -1;
-    this.expandedNodes  = new Set();
     this._zoom = 1; this._panX = H_PAD; this._panY = V_PAD;
+    // Start fully expanded — add every expandable NamedNode
+    this.expandedNodes = new Set();
+    this._expandAll(root);
     this._layout();
     this._draw();
+  }
+
+  // Recursively expand all NamedNodes that have an inner EML tree
+  _expandAll(node) {
+    if (node instanceof NamedNode && node._inner) {
+      this.expandedNodes.add(node);
+      // Walk semantic children (the collapsed view) so we reach all named nodes
+      for (const c of node._semChildren) this._expandAll(c);
+      // Also walk the inner tree to catch any nested named nodes
+      this._expandAllInner(node._inner);
+    } else {
+      for (const c of node.children) this._expandAll(c);
+    }
+  }
+
+  _expandAllInner(node) {
+    if (node instanceof NamedNode && node._inner) {
+      this.expandedNodes.add(node);
+      for (const c of node._semChildren) this._expandAllInner(c);
+      this._expandAllInner(node._inner);
+    } else {
+      for (const c of node.children) this._expandAllInner(c);
+    }
   }
 
   clear() {
@@ -891,22 +933,31 @@ class TreeRenderer {
       ctx.stroke();
     }
 
-    // Expand indicator dot — bottom-right of circle
-    // Cyan dot  = collapsed (can expand to raw EML)
-    // Orange dot = expanded (click again to collapse)
+    // Expand/collapse badge — bottom-right of circle
+    // Shows − when expanded (click to collapse), + when collapsed (click to expand)
     if (node instanceof NamedNode && node._inner) {
-      const isExp = this.expandedNodes.has(node);
-      const dotX  = node._x + R * 0.68;
-      const dotY  = node._y + R * 0.68;
+      const isExp  = this.expandedNodes.has(node);
+      const bx     = node._x + R * 0.65;
+      const by     = node._y + R * 0.65;
+      const br     = 8; // badge radius
+
+      // Badge background: dark pill
       ctx.beginPath();
-      ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
-      ctx.fillStyle = isExp ? '#ff8c00' : '#00bfff';
+      ctx.arc(bx, by, br, 0, Math.PI * 2);
+      ctx.fillStyle = '#111';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-      ctx.lineWidth = 1;
+      ctx.arc(bx, by, br, 0, Math.PI * 2);
+      ctx.strokeStyle = isExp ? '#ff6' : '#6ff';  // yellow when expanded, cyan when collapsed
+      ctx.lineWidth = 1.5;
       ctx.stroke();
+
+      // Symbol: bold − or +
+      ctx.fillStyle = isExp ? '#ff6' : '#6ff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isExp ? '−' : '+', bx, by + 0.5);
     }
 
     // Evaluated value label (shown above circle once revealed)
