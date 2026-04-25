@@ -1000,7 +1000,6 @@ class TreeRenderer {
       this._dragging  = true;
       this._dragLast  = { x: e.offsetX, y: e.offsetY };
       this._dragMoved = false;
-      this._lastPointerUp = null;
       c.setPointerCapture(e.pointerId);
     });
 

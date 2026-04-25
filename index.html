@@ -1747,7 +1747,6 @@ class TreeRenderer {
       this._dragging  = true;
       this._dragLast  = { x: e.offsetX, y: e.offsetY };
       this._dragMoved = false;
-      this._lastPointerUp = null;
       c.setPointerCapture(e.pointerId);
     });
 
@@ -1943,13 +1942,8 @@ function buildLog(steps) {
 }
 
 renderer.onExpanded = () => {
-  // Re-run trace with new expansion state then rebuild log and re-run animation
-  if (_lastTree) {
-    const steps = evaluateWithTrace(_lastTree);
-    renderer.setTree(_lastTree, steps);
-    buildLog(steps);
-    renderer.animateEvaluation(steps);
-  }
+  // Layout and log already updated by _handleExpand — just rebuild log rows
+  buildLog(_lastSteps);
 };
 
 // Mark the row for step idx as the animation's current row (amber pulse)
